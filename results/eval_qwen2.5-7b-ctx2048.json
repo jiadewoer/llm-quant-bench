@@ -1,0 +1,23 @@
+{
+  "label": "qwen2.5-7b-ctx2048",
+  "model": "qwen2.5:7b",
+  "num_ctx": 2048,
+  "total": 20,
+  "correct": 14,
+  "accuracy": 0.7,
+  "by_category": {
+    "arithmetic": {
+      "correct": 14,
+      "total": 20,
+      "accuracy": 0.7
+    }
+  },
+  "wrong_ids": [
+    "arith-02",
+    "arith-09",
+    "arith-11",
+    "arith-14",
+    "arith-15",
+    "arith-16"
+  ]
+}
