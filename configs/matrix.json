@@ -1,31 +1,91 @@
 {
-  "_comment": "Updated 2026-08-29 from Day 3 measurements. The cliff on 7B-q4 sits between ctx 8192 and 16384, so the context axis stays on that model. ctx 4096 is included because it is Ollama's default and therefore what most readers actually run. The parallel axis is core, not optional: ctx 8192 x P4 and ctx 32768 x P1 measured identical SIZE, twice.",
-
+  "_comment": "Updated 2026-08-29 after Day 4. The 7B cliff sits between ctx 8192 and 16384. The two 14B context rows are the highest-value remaining experiment: with only one 14B point its slope is undetermined, and the slope shape is what separates the two candidate explanations for the unexplained per-token term (272 vs 439 KiB/token).",
   "model_map": {
-    "qwen2.5:3b": { "preset": "qwen2.5-3b", "precision": "q4_K_M" },
-    "qwen2.5:7b": { "preset": "qwen2.5-7b", "precision": "q4_K_M" },
-    "qwen2.5:7b-instruct-q8_0": { "preset": "qwen2.5-7b", "precision": "q8_0" },
-    "qwen2.5:14b": { "preset": "qwen2.5-14b", "precision": "q4_K_M" }
+    "qwen2.5:3b": {
+      "preset": "qwen2.5-3b",
+      "precision": "q4_K_M"
+    },
+    "qwen2.5:7b": {
+      "preset": "qwen2.5-7b",
+      "precision": "q4_K_M"
+    },
+    "qwen2.5:7b-instruct-q8_0": {
+      "preset": "qwen2.5-7b",
+      "precision": "q8_0"
+    },
+    "qwen2.5:14b": {
+      "preset": "qwen2.5-14b",
+      "precision": "q4_K_M"
+    }
   },
-
   "runs": [
-    { "label": "3b-q4-ctx4096",  "model": "qwen2.5:3b",  "num_ctx": 4096, "num_parallel": 1 },
-    { "label": "7b-q4-ctx4096",  "model": "qwen2.5:7b",  "num_ctx": 4096, "num_parallel": 1 },
-    { "label": "7b-q8-ctx4096",  "model": "qwen2.5:7b-instruct-q8_0", "num_ctx": 4096, "num_parallel": 1 },
-    { "label": "14b-q4-ctx4096", "model": "qwen2.5:14b", "num_ctx": 4096, "num_parallel": 1 },
-
-    { "label": "7b-q4-ctx2048",  "model": "qwen2.5:7b", "num_ctx": 2048,  "num_parallel": 1 },
-    { "label": "7b-q4-ctx8192",  "model": "qwen2.5:7b", "num_ctx": 8192,  "num_parallel": 1 },
-    { "label": "7b-q4-ctx16384", "model": "qwen2.5:7b", "num_ctx": 16384, "num_parallel": 1 },
-    { "label": "7b-q4-ctx32768", "model": "qwen2.5:7b", "num_ctx": 32768, "num_parallel": 1 },
-
-    { "label": "7b-q4-ctx2048-p4", "model": "qwen2.5:7b", "num_ctx": 2048, "num_parallel": 4 },
-    { "label": "7b-q4-ctx8192-p4", "model": "qwen2.5:7b", "num_ctx": 8192, "num_parallel": 4 }
+    {
+      "label": "3b-q4-ctx4096",
+      "model": "qwen2.5:3b",
+      "num_ctx": 4096,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx4096",
+      "model": "qwen2.5:7b",
+      "num_ctx": 4096,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q8-ctx4096",
+      "model": "qwen2.5:7b-instruct-q8_0",
+      "num_ctx": 4096,
+      "num_parallel": 1
+    },
+    {
+      "label": "14b-q4-ctx4096",
+      "model": "qwen2.5:14b",
+      "num_ctx": 4096,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx2048",
+      "model": "qwen2.5:7b",
+      "num_ctx": 2048,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx8192",
+      "model": "qwen2.5:7b",
+      "num_ctx": 8192,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx16384",
+      "model": "qwen2.5:7b",
+      "num_ctx": 16384,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx32768",
+      "model": "qwen2.5:7b",
+      "num_ctx": 32768,
+      "num_parallel": 1
+    },
+    {
+      "label": "14b-q4-ctx8192",
+      "model": "qwen2.5:14b",
+      "num_ctx": 8192,
+      "num_parallel": 1
+    },
+    {
+      "label": "14b-q4-ctx16384",
+      "model": "qwen2.5:14b",
+      "num_ctx": 16384,
+      "num_parallel": 1
+    },
+    {
+      "label": "7b-q4-ctx12288",
+      "model": "qwen2.5:7b",
+      "num_ctx": 12288,
+      "num_parallel": 1
+    }
   ],
-
-  "_parallel_axis_note": "The two P4 rows require OLLAMA_NUM_PARALLEL=4 in the environment, which means quitting Ollama from the tray, restarting it, and reopening the terminal. Run the eight P1 rows first, then switch, then run the two P4 rows, then switch back. num_parallel in this file is recorded metadata only -- it does not configure the server.",
-
-  "_optional_flash_attention_pair": [
-    { "label": "7b-q4-ctx16384-fa", "model": "qwen2.5:7b", "num_ctx": 16384, "num_parallel": 1, "requires": "OLLAMA_FLASH_ATTENTION=1" }
-  ]
+  "_parallel_axis_note": "The P=4 rows are NOT in runs: num_parallel here is recorded metadata only and does not configure the server. Run the P=1 matrix first, then set OLLAMA_NUM_PARALLEL=4, restart Ollama and the terminal, and run these two by hand:\n  lqb bench --model qwen2.5:7b --ctx 2048 --parallel 4 --label 7b-q4-ctx2048-p4\n  lqb bench --model qwen2.5:7b --ctx 8192 --parallel 4 --label 7b-q4-ctx8192-p4\nThen set it back to 1 and restart again. Cross-check: ctx2048-p4 must equal ctx8192-p1, and ctx8192-p4 must equal ctx32768-p1, byte for byte.",
+  "_flash_attention_note": "OLLAMA_FLASH_ATTENTION was tested on 2026-08-29 and made no measurable difference on Ollama 0.24 -- see results/day3_offload.md section 6. No row for it."
 }
