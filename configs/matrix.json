@@ -1,0 +1,31 @@
+{
+  "_comment": "Updated 2026-08-29 from Day 3 measurements. The cliff on 7B-q4 sits between ctx 8192 and 16384, so the context axis stays on that model. ctx 4096 is included because it is Ollama's default and therefore what most readers actually run. The parallel axis is core, not optional: ctx 8192 x P4 and ctx 32768 x P1 measured identical SIZE, twice.",
+
+  "model_map": {
+    "qwen2.5:3b": { "preset": "qwen2.5-3b", "precision": "q4_K_M" },
+    "qwen2.5:7b": { "preset": "qwen2.5-7b", "precision": "q4_K_M" },
+    "qwen2.5:7b-instruct-q8_0": { "preset": "qwen2.5-7b", "precision": "q8_0" },
+    "qwen2.5:14b": { "preset": "qwen2.5-14b", "precision": "q4_K_M" }
+  },
+
+  "runs": [
+    { "label": "3b-q4-ctx4096",  "model": "qwen2.5:3b",  "num_ctx": 4096, "num_parallel": 1 },
+    { "label": "7b-q4-ctx4096",  "model": "qwen2.5:7b",  "num_ctx": 4096, "num_parallel": 1 },
+    { "label": "7b-q8-ctx4096",  "model": "qwen2.5:7b-instruct-q8_0", "num_ctx": 4096, "num_parallel": 1 },
+    { "label": "14b-q4-ctx4096", "model": "qwen2.5:14b", "num_ctx": 4096, "num_parallel": 1 },
+
+    { "label": "7b-q4-ctx2048",  "model": "qwen2.5:7b", "num_ctx": 2048,  "num_parallel": 1 },
+    { "label": "7b-q4-ctx8192",  "model": "qwen2.5:7b", "num_ctx": 8192,  "num_parallel": 1 },
+    { "label": "7b-q4-ctx16384", "model": "qwen2.5:7b", "num_ctx": 16384, "num_parallel": 1 },
+    { "label": "7b-q4-ctx32768", "model": "qwen2.5:7b", "num_ctx": 32768, "num_parallel": 1 },
+
+    { "label": "7b-q4-ctx2048-p4", "model": "qwen2.5:7b", "num_ctx": 2048, "num_parallel": 4 },
+    { "label": "7b-q4-ctx8192-p4", "model": "qwen2.5:7b", "num_ctx": 8192, "num_parallel": 4 }
+  ],
+
+  "_parallel_axis_note": "The two P4 rows require OLLAMA_NUM_PARALLEL=4 in the environment, which means quitting Ollama from the tray, restarting it, and reopening the terminal. Run the eight P1 rows first, then switch, then run the two P4 rows, then switch back. num_parallel in this file is recorded metadata only -- it does not configure the server.",
+
+  "_optional_flash_attention_pair": [
+    { "label": "7b-q4-ctx16384-fa", "model": "qwen2.5:7b", "num_ctx": 16384, "num_parallel": 1, "requires": "OLLAMA_FLASH_ATTENTION=1" }
+  ]
+}

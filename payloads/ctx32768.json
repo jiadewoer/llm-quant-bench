@@ -1,0 +1,6 @@
+{
+  "model": "qwen2.5:7b",
+  "messages": [{"role": "user", "content": "hi"}],
+  "stream": false,
+  "options": {"num_ctx": 32768}
+}
