@@ -1,11 +1,10 @@
 """VRAM estimator for Ollama / llama.cpp GGUF models.
 
-Predicts whether a given (model, quantization, context length, parallel slots)
-combination fits in a fixed VRAM budget, and if not, what fraction of the model
-Ollama is likely to keep on the GPU.
+Version 2, recalibrated against measurements taken on 2026-08-29. The first
+version was wrong in two ways and both are documented here rather than
+quietly fixed, because the corrections are the interesting part.
 
-All sizes are in GiB (1024**3 bytes), matching what `nvidia-smi` and
-`ollama ps` report.
+All sizes are in GiB (1024**3 bytes), matching `nvidia-smi` and `ollama ps`.
 """
 
 from __future__ import annotations
@@ -15,20 +14,31 @@ from enum import Enum
 
 GIB = 1024**3
 
+# Measured, not assumed. Across six offloaded configurations (7B-q8, 14B-q4,
+# and 7B-q4 at four context lengths) Ollama put between 5.30 and 5.61 GiB on
+# the GPU and never more. With a ~1.2 GiB desktop baseline on an 8188 MiB
+# card, that leaves roughly 1.3 GiB of headroom Ollama declines to touch.
+#
+# The first version of this file assumed usable_fraction=0.92, i.e. a 7.36
+# GiB budget. That was 34% too optimistic and is why it predicted ctx 16384
+# would stay fully resident when it does not.
+MEASURED_GPU_BUDGET_GB = 5.5
+
 
 class Precision(Enum):
     """GGUF quantization levels.
 
-    ``bytes_per_param`` is an *empirical* ratio (file size / parameter count),
-    not the nominal bit-width. Real GGUF files keep embeddings and some
-    attention tensors at higher precision than the nominal level, so q4_K_M
-    lands near 0.66 B/param rather than the naive 0.5.
+    ``bytes_per_param`` is an empirical ratio (file size / parameter count),
+    not the nominal bit width. Real GGUF files keep embeddings and some
+    attention tensors above the nominal level, so q4_K_M lands near 0.66
+    B/param rather than the naive 0.5.
 
-    Calibrated against Qwen2.5-7B (7.62B params):
-      q4_K_M -> 4.7 GB, q8_0 -> 8.1 GB  (matches `ollama list`)
+    Calibrated against Qwen2.5-7B (7.62B params): q4_K_M -> 4.7 GB,
+    q8_0 -> 8.1 GB, matching `ollama list`.
 
-    Caveat: models below ~2B have proportionally huge vocab embeddings
+    Caveat: models below ~2B have proportionally huge vocabulary embeddings
     (Qwen2.5-0.5B is 27% embedding), so these ratios underestimate them.
+    Measured 3B error was +0.23 GiB for the same reason.
     """
 
     F16 = ("f16", 2.05)
@@ -75,38 +85,42 @@ class ModelSpec:
 class VRAMEstimate:
     weights_gb: float
     kv_cache_gb: float
-    overhead_gb: float
+    attn_buffer_gb: float
+    overhead_gb: float = 0.0
 
     @property
     def total_gb(self) -> float:
-        return self.weights_gb + self.kv_cache_gb + self.overhead_gb
+        return self.weights_gb + self.kv_cache_gb + self.attn_buffer_gb + self.overhead_gb
 
-    def fits_in(self, vram_gb: float, usable_fraction: float = 0.92) -> bool:
-        """Does this fit in `vram_gb`?
+    @property
+    def context_cost_gb(self) -> float:
+        """Everything that scales with num_ctx x num_parallel."""
+        return self.kv_cache_gb + self.attn_buffer_gb
 
-        `usable_fraction` accounts for VRAM the desktop, browser and CUDA
-        context already hold. On an 8188 MiB laptop 4060 with a display
-        attached, ~0.5-0.8 GiB is gone before Ollama starts.
+    def fits_in(self, budget_gb: float = MEASURED_GPU_BUDGET_GB) -> bool:
+        """Will Ollama keep this fully resident on the GPU?
+
+        The budget is what Ollama actually allocates, not the card's
+        capacity. Pass a different value if your desktop baseline differs
+        much from the ~1.2 GiB this was measured against.
         """
-        return self.total_gb <= vram_gb * usable_fraction
+        return self.total_gb <= budget_gb
 
-    def predicted_gpu_ratio(self, vram_gb: float, usable_fraction: float = 0.92) -> float:
-        """Fraction of the model Ollama should keep on the GPU, in [0, 1].
+    def predicted_gpu_ratio(self, budget_gb: float = MEASURED_GPU_BUDGET_GB) -> float:
+        """Fraction Ollama should keep on the GPU, in [0, 1].
 
-        Compare this against the PROCESSOR column of `ollama ps`. Ollama
-        offloads whole layers, so the real value is quantized to 1/num_layers
-        steps and this continuous estimate will always be slightly off.
+        Compare against the PROCESSOR column of `ollama ps`. Ollama offloads
+        whole layers, so the real value is quantized to 1/num_layers steps
+        and this continuous estimate will always be a little off.
         """
-        budget = vram_gb * usable_fraction - self.overhead_gb
-        demand = self.weights_gb + self.kv_cache_gb
-        if demand <= 0:
+        if self.total_gb <= 0:
             return 1.0
-        return max(0.0, min(1.0, budget / demand))
+        return max(0.0, min(1.0, budget_gb / self.total_gb))
 
     def __str__(self) -> str:
         return (
-            f"weights={self.weights_gb:.2f}GB kv={self.kv_cache_gb:.2f}GB "
-            f"overhead={self.overhead_gb:.2f}GB total={self.total_gb:.2f}GB"
+            f"weights={self.weights_gb:.2f} kv={self.kv_cache_gb:.2f} "
+            f"attn={self.attn_buffer_gb:.2f} total={self.total_gb:.2f} GB"
         )
 
 
@@ -116,31 +130,65 @@ def estimate(
     num_ctx: int = 2048,
     num_parallel: int = 1,
     kv_bytes_per_elem: float = 2.0,
-    overhead_gb: float = 0.7,
+    flash_attention: bool = False,
+    n_batch: int = 512,
+    overhead_gb: float = 0.0,
 ) -> VRAMEstimate:
-    """Estimate VRAM demand.
+    """Estimate what `ollama ps` will report as SIZE.
 
-    num_parallel maps to OLLAMA_NUM_PARALLEL. Ollama allocates KV cache for
-    every concurrent slot up front, so the cache is a straight multiple of it.
-    When the variable is unset Ollama picks 1 or 4 on its own based on free
-    VRAM, which silently makes results irreproducible -- pin it.
+    Three terms:
 
-    kv_bytes_per_elem is 2.0 for f16. Only lower it if you have actually
-    enabled KV cache quantization (which also requires flash attention).
+    1. Weights. Constant for a given model and quantization.
+
+    2. KV cache: 2 * L * H_kv * d_head * num_ctx * num_parallel * bytes.
+       num_parallel maps to OLLAMA_NUM_PARALLEL. Ollama reserves cache for
+       every concurrent slot up front, so num_ctx and num_parallel are the
+       same multiplier. Measured confirmation: ctx 8192 with 4 slots and ctx
+       32768 with 1 slot both reported exactly 8.7 GB.
+
+    3. Attention buffer: n_batch * effective_tokens * H * 4 bytes, and only
+       when flash attention is off. Without it llama.cpp materializes the
+       attention scores, and that buffer scales with total context just like
+       the cache does. For Qwen2.5-7B the two terms are coincidentally equal
+       at 56 KiB per token each, so switching flash attention off doubles
+       the cost of context.
+
+       This term uses effective_tokens, not num_ctx. It has to: ctx 8192
+       with 4 slots and ctx 32768 with 1 slot were measured to report the
+       same SIZE, so every context-dependent term must see the product.
+
+       Version 1 of this file omitted term 3 entirely and under-predicted
+       ctx 32768 by 1.5 GiB. Adding it brought the error under 0.2 GiB on
+       7B-q8 and 14B-q4.
+
+    Note that overhead defaults to 0: the CUDA context and driver allocation
+    show up in the nvidia-smi baseline, not in Ollama's reported SIZE.
     """
     weights = model.num_params * 1e9 * precision.bytes_per_param / GIB
+
+    effective_tokens = num_ctx * num_parallel
 
     kv = (
         2  # K and V
         * model.num_layers
         * model.num_kv_heads
         * model.head_dim
-        * num_ctx
-        * num_parallel
+        * effective_tokens
         * kv_bytes_per_elem
     ) / GIB
 
-    return VRAMEstimate(weights_gb=weights, kv_cache_gb=kv, overhead_gb=overhead_gb)
+    attn = (
+        0.0
+        if flash_attention
+        else (n_batch * effective_tokens * model.num_attention_heads * 4) / GIB
+    )
+
+    return VRAMEstimate(
+        weights_gb=weights,
+        kv_cache_gb=kv,
+        attn_buffer_gb=attn,
+        overhead_gb=overhead_gb,
+    )
 
 
 # Values below are transcribed from each model's config.json on HuggingFace.
