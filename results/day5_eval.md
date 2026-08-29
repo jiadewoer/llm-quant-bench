@@ -127,21 +127,43 @@ both the questions and the grader changed.
 
 ---
 
-## 3. Quantization costs one point
+## 3. Quantization costs nothing measurable
 
 q8_0 → q4_K_M: **81 to 80**, with the entire difference in code (13 → 12).
-The other four categories are identical.
+The other four categories are identical — and pairing the items dissolves
+even that single point.
 
-### The difference is not statistically real
+### Paired comparison: the difference is absent
 
-At n = 100 and p ≈ 0.81 the standard error of a single measurement is about
-**3.9 percentage points**, giving a 95% interval near ±7.7 pp. **A one-point
-gap sits well inside the noise.** The honest statement is "no significant
-difference detected", not "quantization costs one point".
+Totals alone (81 vs 80) cannot rule out the two models failing different
+items and cancelling out. Comparing `wrong_ids` item by item:
 
-A stronger claim needs paired per-item comparison (McNemar) rather than
-totals — identical category totals can hide two models failing different
-items and cancelling out. See §6.
+|  | q4 right | q4 wrong |
+|---|---|---|
+| **q8 right** | 79 | 2 |
+| **q8 wrong** | 1 | 18 |
+
+- **The two models agree on 97 of 100 items.**
+- Three discordant pairs: `reason-16` (q4 right, q8 wrong), `code-20` and
+  `reason-14` (q4 wrong).
+- **McNemar exact test, two-sided p = 1.000.**
+
+That is a stronger statement than "inside the noise". The difference is not
+undetected; after pairing there is nothing to detect.
+
+For reference, an unpaired measurement at n = 100 and p ≈ 0.81 has a standard
+error near 3.9 pp and a 95% interval of about ±7.7 pp. The paired design is
+not bound by that — its power depends on the **number of discordant pairs**,
+not the total item count.
+
+### The 18 shared failures are the real finding
+
+Both models fail the **same 18 items**. Those failures are Qwen2.5-7B's own
+ceiling: **quantization introduces no new failure mode**, it only changes the
+outcome on three marginal items.
+
+If quantization were damaging the model, q4 would be expected to fail in
+clusters on items q8 answers correctly. It does not.
 
 ### The memory saved is real
 
@@ -209,25 +231,22 @@ These are exactly what an eval set should keep — they discriminate.
 
 ## 6. Analysis still owed
 
-**Paired comparison.** Similar totals can hide per-item divergence:
+**Where the sample size binds.** Pairing makes 100 items go further than it
+looks, because power depends on discordant pairs rather than total items, and
+q8 against q4 produced only three. The flip side: detecting any difference at
+p < 0.05 needs roughly eight discordant pairs. **With three, the strongest
+supportable claim is "no difference found", not "no difference exists".**
 
-```powershell
-python -c "
-import json
-a=set(json.load(open('results/eval_baseline-q8.json',encoding='utf-8'))['wrong_ids'])
-b=set(json.load(open('results/eval_q4-ctx4096.json',encoding='utf-8'))['wrong_ids'])
-print('both wrong', len(a&b), '| only q8', sorted(a-b), '| only q4', sorted(b-a))
-"
-```
+**The 14B comparison is not paired.** The five-point gap in §4 compares
+totals only. McNemar would apply in principle, but the 14B is a different
+model rather than another quantization of the same one, so pairing carries
+less interpretive weight — and the gap's direction is unambiguous and
+concentrated in three reasoning categories, so the conclusion does not rest
+on a significance test. Worth adding if time allows.
 
-- one or two in "only q4" and nothing in "only q8" → the loss is small and clean
-- five or six on each side → the similar totals are cancellation, and the
-  per-item divergence is itself the finding
-
-**Sample size.** 100 items gives a ±7.7 pp interval, enough only to support
-claims at the "difference is under 8 points" scale. Resolving a 1–2 point
-difference would need roughly 1000 items, outside this project's scope. This
-belongs in the known-limitations section.
+**One context length only.** Every accuracy run used `num_ctx=4096`. Whether
+quantization loss grows with context is not answered here, and is the natural
+follow-up.
 
 ---
 
@@ -235,8 +254,9 @@ belongs in the known-limitations section.
 
 On an 8 GB consumer GPU:
 
-1. **Use q4_K_M, not q8_0.** The accuracy difference is not measurable, and
-   q4 saves 3.33 GiB — about 27,000 tokens of context — while staying fully
+1. **Use q4_K_M, not q8_0.** The two agree on 97 of 100 items at an exact
+   McNemar p of 1.000, so there is no accuracy difference to speak of, while
+   q4 saves 3.33 GiB — about 27,000 tokens of context — and stays fully
    resident.
 2. **Spend the saved memory on context, not on a bigger model.** The 14B buys
    five points and costs 6.16× the speed.
