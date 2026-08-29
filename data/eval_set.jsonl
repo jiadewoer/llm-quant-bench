@@ -1,42 +1,42 @@
 {"id": "arith-01", "category": "arithmetic", "kind": "short", "question": "What is 47 * 23?", "answer": "1081"}
 {"id": "arith-02", "category": "arithmetic", "kind": "short", "question": "A shirt costs 40 dollars after a 20% discount. What was the original price in dollars?", "answer": "50"}
 {"id": "arith-03", "category": "arithmetic", "kind": "mcq", "question": "If a train travels 240 km in 3 hours, what is its average speed?", "choices": {"A": "80 km/h", "B": "70 km/h", "C": "60 km/h", "D": "90 km/h"}, "answer": "A"}
-{"id": "arith-04", "category": "arithmetic", "kind": "short", "question": "15 的 20% 是多少？只回答数字。", "answer": "3"}
-{"id": "arith-05", "category": "arithmetic", "kind": "short", "question": "一件商品原价 80 元，打七折后售价多少元？只回答数字。", "answer": "56"}
+{"id": "arith-04", "category": "arithmetic", "kind": "short", "question": "15 的 20% 是多少？", "answer": "3"}
+{"id": "arith-05", "category": "arithmetic", "kind": "short", "question": "一件商品原价 80 元，打七折后售价多少元？", "answer": "56"}
 {"id": "arith-06", "category": "arithmetic", "kind": "mcq", "question": "一个长方形长 12 厘米、宽 5 厘米，周长是多少？", "choices": {"A": "34 厘米", "B": "17 厘米", "C": "60 厘米", "D": "24 厘米"}, "answer": "A"}
-{"id": "arith-07", "category": "arithmetic", "kind": "short", "question": "3 的 5 次方等于多少？只回答数字。", "answer": "243"}
+{"id": "arith-07", "category": "arithmetic", "kind": "short", "question": "3 的 5 次方等于多少？", "answer": "243"}
 {"id": "arith-08", "category": "arithmetic", "kind": "mcq", "question": "某数加 7 后再乘以 3 得 36，这个数是多少？", "choices": {"A": "3", "B": "12", "C": "9", "D": "5"}, "answer": "D"}
-{"id": "arith-09", "category": "arithmetic", "kind": "short", "question": "一辆车以 60 公里/小时行驶 2.5 小时，走了多少公里？只回答数字。", "answer": "150"}
+{"id": "arith-09", "category": "arithmetic", "kind": "short", "question": "一辆车以 60 公里/小时行驶 2.5 小时，走了多少公里？", "answer": "150"}
 {"id": "arith-10", "category": "arithmetic", "kind": "mcq", "question": "0.1 + 0.2 在数学上等于多少？", "choices": {"A": "0.2", "B": "0.30000000000000004", "C": "0.3", "D": "无法确定"}, "answer": "C"}
 {"id": "arith-11", "category": "arithmetic", "kind": "mcq", "question": "书店进货 200 本书，卖出 62.5%，还剩多少本？", "choices": {"A": "138", "B": "125", "C": "75", "D": "62"}, "answer": "C"}
-{"id": "arith-12", "category": "arithmetic", "kind": "short", "question": "一个数的三分之二是 18，这个数是多少？只回答数字。", "answer": "27"}
+{"id": "arith-12", "category": "arithmetic", "kind": "short", "question": "一个数的三分之二是 18，这个数是多少？", "answer": "27"}
 {"id": "arith-13", "category": "arithmetic", "kind": "mcq", "question": "连续三个整数的和是 72，其中最大的一个是多少？", "choices": {"A": "23", "B": "25", "C": "24", "D": "26"}, "answer": "B"}
-{"id": "arith-14", "category": "arithmetic", "kind": "short", "question": "边长为 6 的正方形面积减去半径为 3 的圆面积，结果保留整数（π 取 3.14）。只回答数字。", "answer": "8"}
+{"id": "arith-14", "category": "arithmetic", "kind": "short", "question": "边长为 6 的正方形面积减去半径为 3 的圆面积（π 取 3.14），结果四舍五入到整数是多少？", "answer": "8"}
 {"id": "arith-15", "category": "arithmetic", "kind": "mcq", "question": "甲比乙多 20%，那么乙比甲少百分之几？", "choices": {"A": "20%", "B": "25%", "C": "16.7%", "D": "80%"}, "answer": "C"}
-{"id": "arith-16", "category": "arithmetic", "kind": "short", "question": "一项工作甲单独做需 6 天，乙单独做需 12 天，两人合作需几天？只回答数字。", "answer": "4"}
+{"id": "arith-16", "category": "arithmetic", "kind": "short", "question": "一项工作甲单独做需 6 天，乙单独做需 12 天，两人合作需几天？", "answer": "4"}
 {"id": "arith-17", "category": "arithmetic", "kind": "mcq", "question": "把 1 到 100 的所有整数相加，结果是多少？", "choices": {"A": "4950", "B": "5000", "C": "5050", "D": "10100"}, "answer": "C"}
-{"id": "arith-18", "category": "arithmetic", "kind": "short", "question": "某商品先涨价 10%，再降价 10%，最终价格是原价的百分之多少？只回答数字，不带百分号。", "answer": "99"}
+{"id": "arith-18", "category": "arithmetic", "kind": "short", "question": "某商品先涨价 10%，再降价 10%，最终价格是原价的百分之多少？", "answer": "99"}
 {"id": "arith-19", "category": "arithmetic", "kind": "mcq", "question": "一个容器装满水重 5 千克，装半满水重 3 千克，空容器重多少？", "choices": {"A": "1.5 千克", "B": "1 千克", "C": "2 千克", "D": "2.5 千克"}, "answer": "B"}
-{"id": "arith-20", "category": "arithmetic", "kind": "short", "question": "两个数的和是 30，差是 8，较大的数是多少？只回答数字。", "answer": "19"}
+{"id": "arith-20", "category": "arithmetic", "kind": "short", "question": "两个数的和是 30，差是 8，较大的数是多少？", "answer": "19"}
 {"id": "cn-01", "category": "chinese", "kind": "mcq", "question": "成语「刻舟求剑」讽刺的是哪一种行为？", "choices": {"A": "不知变通", "B": "贪得无厌", "C": "临阵脱逃", "D": "见异思迁"}, "answer": "A"}
-{"id": "cn-02", "category": "chinese", "kind": "short", "question": "《静夜思》的作者是谁？只回答姓名。", "answer": "李白"}
+{"id": "cn-02", "category": "chinese", "kind": "short", "question": "《静夜思》的作者是谁？", "answer": "李白"}
 {"id": "cn-03", "category": "chinese", "kind": "mcq", "question": "下列哪个词的意思与「一蹴而就」最接近？", "choices": {"A": "半途而废", "B": "一挥而就", "C": "循序渐进", "D": "精雕细琢"}, "answer": "B"}
 {"id": "cn-04", "category": "chinese", "kind": "mcq", "question": "“亡羊补牢”这个成语的含义最接近下列哪一项？", "choices": {"A": "未雨绸缪", "B": "因小失大", "C": "徒劳无功", "D": "为时未晚地补救"}, "answer": "D"}
-{"id": "cn-05", "category": "chinese", "kind": "short", "question": "《春望》的作者是谁？只回答姓名。", "answer": "杜甫"}
+{"id": "cn-05", "category": "chinese", "kind": "short", "question": "《春望》的作者是谁？", "answer": "杜甫"}
 {"id": "cn-06", "category": "chinese", "kind": "mcq", "question": "下列哪个词与“汗牛充栋”的含义最接近？", "choices": {"A": "牲畜众多", "B": "劳作辛苦", "C": "房屋破旧", "D": "书籍极多"}, "answer": "D"}
 {"id": "cn-07", "category": "chinese", "kind": "mcq", "question": "“青出于蓝而胜于蓝”出自哪部典籍？", "choices": {"A": "《论语》", "B": "《孟子》", "C": "《荀子》", "D": "《庄子》"}, "answer": "C"}
 {"id": "cn-08", "category": "chinese", "kind": "short", "question": "“床前明月光”的下一句是什么？", "answer": "疑是地上霜"}
 {"id": "cn-09", "category": "chinese", "kind": "mcq", "question": "下列哪个成语的用法是褒义的？", "choices": {"A": "处心积虑", "B": "无所不为", "C": "趋之若鹜", "D": "殚精竭虑"}, "answer": "D"}
 {"id": "cn-10", "category": "chinese", "kind": "mcq", "question": "“朝三暮四”原本形容的是什么？", "choices": {"A": "用诈术欺骗", "B": "反复无常", "C": "早出晚归", "D": "计划周密"}, "answer": "A"}
-{"id": "cn-11", "category": "chinese", "kind": "short", "question": "《红楼梦》的作者是谁？只回答姓名。", "answer": "曹雪芹"}
+{"id": "cn-11", "category": "chinese", "kind": "short", "question": "《红楼梦》的作者是谁？", "answer": "曹雪芹"}
 {"id": "cn-12", "category": "chinese", "kind": "mcq", "question": "下列哪一组词属于近义词？", "choices": {"A": "精细—精致", "B": "严谨—严峻", "C": "果断—武断", "D": "谦虚—谦让"}, "answer": "A"}
 {"id": "cn-13", "category": "chinese", "kind": "mcq", "question": "“不刊之论”中的“刊”是什么意思？", "choices": {"A": "刊登", "B": "刊印", "C": "删改", "D": "评论"}, "answer": "C"}
 {"id": "cn-14", "category": "chinese", "kind": "mcq", "question": "下列句子没有语病的是哪一句？", "choices": {"A": "通过这次学习，使我提高了认识。", "B": "他的写作水平明显改进了。", "C": "能否成功取决于努力的程度是关键。", "D": "这次会议讨论并通过了新的方案。"}, "answer": "D"}
-{"id": "cn-15", "category": "chinese", "kind": "short", "question": "“三人行，必有我师焉”出自哪部书？只回答书名。", "answer": "论语"}
+{"id": "cn-15", "category": "chinese", "kind": "short", "question": "“三人行，必有我师焉”出自哪部书？", "answer": "论语"}
 {"id": "cn-16", "category": "chinese", "kind": "mcq", "question": "“差强人意”的正确含义是什么？", "choices": {"A": "让人很不满意", "B": "差别很大", "C": "强迫别人同意", "D": "大体上还能使人满意"}, "answer": "D"}
 {"id": "cn-17", "category": "chinese", "kind": "mcq", "question": "下列哪个字的读音与其他三个不同？", "choices": {"A": "处理", "B": "处所", "C": "处罚", "D": "处置"}, "answer": "B"}
 {"id": "cn-18", "category": "chinese", "kind": "mcq", "question": "“七月流火”原意指的是什么？", "choices": {"A": "天气酷热", "B": "天气转凉", "C": "火灾频发", "D": "农事繁忙"}, "answer": "B"}
-{"id": "cn-19", "category": "chinese", "kind": "short", "question": "成语“画蛇添足”比喻做了什么样的事？用四个字回答。", "answer": "多此一举"}
+{"id": "cn-19", "category": "chinese", "kind": "mcq", "question": "成语「画蛇添足」比喻的是什么？", "answer": "D", "choices": {"A": "未雨绸缪，提前准备", "B": "循序渐进，稳扎稳打", "C": "锦上添花，更进一步", "D": "多此一举，反而坏事"}}
 {"id": "cn-20", "category": "chinese", "kind": "mcq", "question": "《岳阳楼记》中“先天下之忧而忧”的作者是谁？", "choices": {"A": "欧阳修", "B": "苏轼", "C": "王安石", "D": "范仲淹"}, "answer": "D"}
 {"id": "code-02", "category": "code", "kind": "short", "question": "In Python, what does the expression 7 // 2 evaluate to?", "answer": "3"}
 {"id": "code-06", "category": "code", "kind": "mcq", "question": "以下 Python 代码输出什么？\na = [0, 1, 2, 3, 4]\nprint(a[-4:-1:2])", "choices": {"A": "[0, 2]", "B": "[1, 3]", "C": "[1, 2, 3]", "D": "[3, 1]"}, "answer": "B"}
@@ -62,18 +62,18 @@
 {"id": "fact-02", "category": "factual", "kind": "short", "question": "What is the capital city of Australia?", "answer": "Canberra"}
 {"id": "fact-03", "category": "factual", "kind": "mcq", "question": "In which layer of the atmosphere does most weather occur?", "choices": {"A": "Stratosphere", "B": "Troposphere", "C": "Mesosphere", "D": "Thermosphere"}, "answer": "B"}
 {"id": "fact-04", "category": "factual", "kind": "mcq", "question": "人体内数量最多的元素（按原子数计）是哪一种？", "choices": {"A": "碳", "B": "氧", "C": "氮", "D": "氢"}, "answer": "D"}
-{"id": "fact-05", "category": "factual", "kind": "short", "question": "光在真空中的速度约为每秒多少万公里？只回答数字。", "answer": "30"}
+{"id": "fact-05", "category": "factual", "kind": "short", "question": "光在真空中的传播速度约为每秒多少万公里？", "answer": "30"}
 {"id": "fact-06", "category": "factual", "kind": "mcq", "question": "下列哪个器官负责分泌胰岛素？", "choices": {"A": "肝脏", "B": "甲状腺", "C": "肾上腺", "D": "胰腺"}, "answer": "D"}
-{"id": "fact-07", "category": "factual", "kind": "short", "question": "太阳系中体积最大的行星是哪一颗？只回答名称。", "answer": "木星"}
+{"id": "fact-07", "category": "factual", "kind": "short", "question": "太阳系中体积最大的行星是哪一颗？", "answer": "木星"}
 {"id": "fact-08", "category": "factual", "kind": "mcq", "question": "DNA 的双螺旋结构是由谁在 1953 年提出的？", "choices": {"A": "沃森与克里克", "B": "达尔文与孟德尔", "C": "巴斯德与科赫", "D": "居里夫妇"}, "answer": "A"}
 {"id": "fact-09", "category": "factual", "kind": "mcq", "question": "下列哪种血型被称为“万能供血者”（红细胞层面）？", "choices": {"A": "O 型", "B": "A 型", "C": "AB 型", "D": "B 型"}, "answer": "A"}
-{"id": "fact-10", "category": "factual", "kind": "short", "question": "世界上最深的海沟叫什么？只回答名称。", "answer": "马里亚纳海沟"}
+{"id": "fact-10", "category": "factual", "kind": "short", "question": "世界上最深的海沟叫什么？", "answer": "马里亚纳海沟"}
 {"id": "fact-11", "category": "factual", "kind": "mcq", "question": "地球大气中含量最高的气体是什么？", "choices": {"A": "氧气", "B": "二氧化碳", "C": "氩气", "D": "氮气"}, "answer": "D"}
 {"id": "fact-12", "category": "factual", "kind": "mcq", "question": "《物种起源》的作者是谁？", "choices": {"A": "查尔斯·达尔文", "B": "阿尔弗雷德·华莱士", "C": "让-巴蒂斯特·拉马克", "D": "卡尔·林奈"}, "answer": "A"}
 {"id": "fact-13", "category": "factual", "kind": "short", "question": "水的化学分子式是什么？", "answer": "H2O"}
 {"id": "fact-14", "category": "factual", "kind": "mcq", "question": "下列哪个国家的首都不在其最大城市？", "choices": {"A": "澳大利亚", "B": "法国", "C": "英国", "D": "日本"}, "answer": "A"}
 {"id": "fact-15", "category": "factual", "kind": "mcq", "question": "半导体中掺入五价元素后形成的是什么型半导体？", "choices": {"A": "P 型", "B": "复合型", "C": "本征型", "D": "N 型"}, "answer": "D"}
-{"id": "fact-16", "category": "factual", "kind": "short", "question": "人体正常体温约为多少摄氏度？只回答数字。", "answer": "37"}
+{"id": "fact-16", "category": "factual", "kind": "short", "question": "人体正常体温约为多少摄氏度？", "answer": "37"}
 {"id": "fact-17", "category": "factual", "kind": "mcq", "question": "下列哪位科学家提出了广义相对论？", "choices": {"A": "尼尔斯·玻尔", "B": "马克斯·普朗克", "C": "阿尔伯特·爱因斯坦", "D": "维尔纳·海森堡"}, "answer": "C"}
 {"id": "fact-18", "category": "factual", "kind": "mcq", "question": "青霉素最早是由谁发现的？", "choices": {"A": "路易·巴斯德", "B": "罗伯特·科赫", "C": "亚历山大·弗莱明", "D": "约瑟夫·李斯特"}, "answer": "C"}
 {"id": "fact-19", "category": "factual", "kind": "mcq", "question": "下列哪种岩石属于变质岩？", "choices": {"A": "花岗岩", "B": "玄武岩", "C": "大理岩", "D": "砂岩"}, "answer": "C"}
@@ -83,16 +83,16 @@
 {"id": "reason-03", "category": "reasoning", "kind": "mcq", "question": "A bat and a ball cost 1.10 dollars in total. The bat costs 1.00 dollar more than the ball. How much does the ball cost?", "choices": {"A": "0.10", "B": "0.05", "C": "0.15", "D": "0.01"}, "answer": "B"}
 {"id": "reason-04", "category": "reasoning", "kind": "mcq", "question": "如果今天是星期三，那么 100 天后是星期几？", "choices": {"A": "星期五", "B": "星期六", "C": "星期日", "D": "星期一"}, "answer": "A"}
 {"id": "reason-05", "category": "reasoning", "kind": "mcq", "question": "有五个人参加比赛。甲不是第一，乙不是最后，丙比甲名次高。下列哪个一定为真？", "choices": {"A": "丙是第一", "B": "甲不是最后", "C": "甲不是第一且丙不是最后", "D": "乙是第一"}, "answer": "C"}
-{"id": "reason-06", "category": "reasoning", "kind": "short", "question": "一个池塘里的浮萍每天面积翻倍，第 30 天铺满整个池塘。第几天铺满一半？只回答数字。", "answer": "29"}
+{"id": "reason-06", "category": "reasoning", "kind": "short", "question": "一个池塘里的浮萍每天面积翻倍，第 30 天铺满整个池塘。第几天铺满一半？", "answer": "29"}
 {"id": "reason-07", "category": "reasoning", "kind": "mcq", "question": "所有的 A 都是 B，有些 B 是 C。由此可以推出什么？", "choices": {"A": "有些 A 是 C", "B": "以上都推不出来", "C": "有些 A 不是 C", "D": "所有 C 都是 B"}, "answer": "B"}
 {"id": "reason-08", "category": "reasoning", "kind": "mcq", "question": "数列 2, 6, 12, 20, 30, ? 的下一项是多少？", "choices": {"A": "40", "B": "36", "C": "44", "D": "42"}, "answer": "D"}
-{"id": "reason-09", "category": "reasoning", "kind": "short", "question": "三个开关控制三盏在另一个房间的灯，你只能进那个房间一次。最少需要操作几个开关就能全部分辨？只回答数字。", "answer": "2"}
+{"id": "reason-09", "category": "reasoning", "kind": "short", "question": "三个开关控制三盏在另一个房间的灯，你只能进那个房间一次。最少需要操作几个开关就能全部分辨？", "answer": "2"}
 {"id": "reason-10", "category": "reasoning", "kind": "mcq", "question": "小明说：“我说的这句话是假的。”这句话属于什么？", "choices": {"A": "真命题", "B": "自指悖论", "C": "假命题", "D": "同义反复"}, "answer": "B"}
 {"id": "reason-11", "category": "reasoning", "kind": "mcq", "question": "如果“下雨则地湿”为真，现在观察到地不湿，可以推出什么？", "choices": {"A": "下雨了", "B": "没下雨", "C": "无法判断", "D": "地湿与下雨无关"}, "answer": "B"}
-{"id": "reason-12", "category": "reasoning", "kind": "short", "question": "12 个球中有一个重量异常（不知偏轻还是偏重），用天平最少称几次一定能找出来？只回答数字。", "answer": "3"}
+{"id": "reason-12", "category": "reasoning", "kind": "short", "question": "12 个球中有一个重量异常（不知偏轻还是偏重），用天平最少称几次一定能找出来？", "answer": "3"}
 {"id": "reason-13", "category": "reasoning", "kind": "mcq", "question": "四个人过桥，需要手电筒，一次最多两人同行，速度分别是 1、2、5、10 分钟，同行按慢的算。最短总时间是多少？", "choices": {"A": "17 分钟", "B": "19 分钟", "C": "21 分钟", "D": "15 分钟"}, "answer": "A"}
 {"id": "reason-14", "category": "reasoning", "kind": "mcq", "question": "某班每个人要么总说真话，要么总说假话。甲说“我们班至少有一个说谎者”。由此可知什么？", "choices": {"A": "甲说真话", "B": "甲说假话", "C": "无法判断", "D": "全班都说谎"}, "answer": "A"}
-{"id": "reason-15", "category": "reasoning", "kind": "short", "question": "一个正方体的每个面涂上颜色后切成 27 个小立方体，恰好有两个面被涂色的小立方体有几个？只回答数字。", "answer": "12"}
+{"id": "reason-15", "category": "reasoning", "kind": "short", "question": "一个正方体的每个面涂上颜色后切成 27 个小立方体，恰好有两个面被涂色的小立方体有几个？", "answer": "12"}
 {"id": "reason-16", "category": "reasoning", "kind": "mcq", "question": "已知 A 比 B 高，C 比 D 矮，B 比 C 高。谁最矮？", "choices": {"A": "A", "B": "B", "C": "D", "D": "C"}, "answer": "C"}
 {"id": "reason-17", "category": "reasoning", "kind": "mcq", "question": "有 3 顶红帽 2 顶蓝帽，三人各戴一顶且看不见自己的。前两人都说不知道自己的颜色，第三人应推出什么？", "choices": {"A": "自己戴红帽", "B": "自己戴蓝帽", "C": "无法确定", "D": "前两人都戴蓝帽"}, "answer": "A"}
 {"id": "reason-18", "category": "reasoning", "kind": "short", "question": "如果所有的玫瑰都是花，所有的花都会凋谢，那么玫瑰会不会凋谢？只回答“会”或“不会”。", "answer": "会"}

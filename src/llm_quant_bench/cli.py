@@ -13,7 +13,7 @@ from rich.table import Table
 from . import monitor
 from .bench import run_bench
 from .estimator import MEASURED_GPU_BUDGET_GB, PRESETS, Precision, estimate
-from .evaluate import run_eval
+from .evaluate import review as review_eval, run_eval
 
 app = typer.Typer(add_completion=False, help="VRAM and throughput benchmarks for Ollama.")
 console = Console()
@@ -143,6 +143,19 @@ def eval_cmd(
     out.write_text(json.dumps(result.summary(), indent=2, ensure_ascii=False), encoding="utf-8")
     console.print(f"[bold]{label}[/bold] {result.correct}/{result.total} = {result.accuracy:.1%}")
     console.print(f"[dim]wrote {out}[/dim]")
+
+
+@app.command("review")
+def review_cmd(
+    result: Path = typer.Argument(..., help="results/eval_<label>.json"),
+    eval_set: Path = typer.Option(Path("data/eval_set.jsonl"), "--set"),
+) -> None:
+    """Show every wrong item with its question and the model's actual reply.
+
+    Run this before trusting a score: it separates "the model got it wrong"
+    from "the question was bad".
+    """
+    review_eval(result, eval_set)
 
 
 @app.command()
