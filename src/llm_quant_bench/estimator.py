@@ -14,15 +14,25 @@ from enum import Enum
 
 GIB = 1024**3
 
-# Measured, not assumed. Across six offloaded configurations (7B-q8, 14B-q4,
-# and 7B-q4 at four context lengths) Ollama put between 5.30 and 5.61 GiB on
-# the GPU and never more. With a ~1.2 GiB desktop baseline on an 8188 MiB
-# card, that leaves roughly 1.3 GiB of headroom Ollama declines to touch.
+# Measured, not assumed. Exact size_vram byte counts from /api/ps across
+# every offloaded configuration measured on Day 4:
 #
-# The first version of this file assumed usable_fraction=0.92, i.e. a 7.36
-# GiB budget. That was 34% too optimistic and is why it predicted ctx 16384
-# would stay fully resident when it does not.
-MEASURED_GPU_BUDGET_GB = 5.5
+#     7b-q4  ctx16384  P1   5.668 GiB
+#     7b-q4  ctx32768  P1   5.738 GiB
+#     14b-q4 ctx4096   P1   5.627 GiB
+#     7b-q4  ctx32768  P4   9.014 GiB   <- exceeds the card, see below
+#
+# The first three span 5.627-5.738, mean 5.678, on an 7.996 GiB card with a
+# ~1.2 GiB desktop baseline. Ollama leaves roughly 1.1 GiB untouched.
+#
+# The fourth reports more VRAM than the card physically has. Windows driver
+# memory fallback silently spills to host RAM while still counting it as
+# VRAM; see results/day3_offload.md section 3.
+#
+# Version 1 assumed usable_fraction=0.92, i.e. a 7.36 GiB budget. That was
+# 30% too optimistic and is why it predicted ctx 16384 would stay fully
+# resident when it does not.
+MEASURED_GPU_BUDGET_GB = 5.68
 
 
 class Precision(Enum):
@@ -33,20 +43,29 @@ class Precision(Enum):
     attention tensors above the nominal level, so q4_K_M lands near 0.66
     B/param rather than the naive 0.5.
 
-    Calibrated against Qwen2.5-7B (7.62B params): q4_K_M -> 4.7 GB,
-    q8_0 -> 8.1 GB, matching `ollama list`.
+    Calibrated against `ollama list`, which reports DECIMAL GB (bytes / 1e9),
+    not GiB. Getting this wrong inflates every weight estimate by 7.4%:
+
+        q4_K_M   4.7e9 / 7.62e9  = 0.617   (Qwen2.5-7B)
+                 9.0e9 / 14.77e9 = 0.609   (Qwen2.5-14B)
+                 1.9e9 / 3.09e9  = 0.615   (Qwen2.5-3B)
+        q8_0     8.1e9 / 7.62e9  = 1.063
+
+    Version 2 of this file used GiB-derived ratios (0.66 for q4_K_M) because
+    Day 3 read SIZE off `ollama ps`, which also displays decimal GB. Day 4
+    read exact byte counts from /api/ps and the discrepancy surfaced.
 
     Caveat: models below ~2B have proportionally huge vocabulary embeddings
     (Qwen2.5-0.5B is 27% embedding), so these ratios underestimate them.
     Measured 3B error was +0.23 GiB for the same reason.
     """
 
-    F16 = ("f16", 2.05)
-    Q8_0 = ("q8_0", 1.14)
-    Q6_K = ("q6_K", 0.90)
-    Q5_K_M = ("q5_K_M", 0.78)
-    Q4_K_M = ("q4_K_M", 0.66)
-    Q3_K_M = ("q3_K_M", 0.52)
+    F16 = ("f16", 1.91)
+    Q8_0 = ("q8_0", 1.063)
+    Q6_K = ("q6_K", 0.838)
+    Q5_K_M = ("q5_K_M", 0.726)
+    Q4_K_M = ("q4_K_M", 0.614)
+    Q3_K_M = ("q3_K_M", 0.484)
 
     def __init__(self, tag: str, bytes_per_param: float) -> None:
         self.tag = tag

@@ -15,7 +15,7 @@ from dataclasses import asdict, dataclass, field
 
 import httpx
 
-from .monitor import LoadedModel, find_loaded, gpu_used_mib, stop_model
+from .monitor import LoadedModel, baseline_gb, find_loaded, stop_all
 
 OLLAMA = "http://localhost:11434"
 
@@ -157,14 +157,18 @@ async def run_bench(
     num_ctx, so skipping the unload gives every row in a sweep the same
     numbers -- the most confusing failure mode in this whole project.
     """
-    stop_model(model)
-    base = gpu_used_mib()
+    # Unload everything, not just this model: a model left over from a
+    # previous run would be counted in the baseline. Then wait for the driver
+    # to actually release the memory -- /api/ps reports a model gone well
+    # before that happens.
+    stop_all()
+    base = baseline_gb()
     result = BenchResult(
         label=label,
         model=model,
         num_ctx=num_ctx,
         num_parallel=num_parallel,
-        baseline_gb=round(base / 1024, 3) if base is not None else None,
+        baseline_gb=round(base, 3) if base is not None else None,
     )
 
     timeout = httpx.Timeout(600.0, connect=10.0)

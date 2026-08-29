@@ -84,6 +84,22 @@ def stop_model(model: str, timeout: float = 30.0) -> None:
         time.sleep(0.5)
 
 
+def stop_all(timeout: float = 60.0) -> list[str]:
+    """Unload every resident model, not just one. Returns what was stopped.
+
+    stop_model() only touches the model named. A benchmark that unloads its
+    own model but leaves the previous run's model resident will read a
+    baseline that includes it: two Day 4 runs recorded 7.19 and 6.35 GiB
+    against a true value near 1.05, because the preceding model was still
+    loaded when the baseline was taken.
+    """
+    stopped = []
+    for m in ps():
+        stop_model(m.name, timeout=timeout)
+        stopped.append(m.name)
+    return stopped
+
+
 def gpu_used_mib() -> float | None:
     """Total VRAM in use right now, or None when there is no NVIDIA GPU."""
     if shutil.which("nvidia-smi") is None:
@@ -125,13 +141,33 @@ def gpu_total_mib() -> float | None:
     return float(out.stdout.strip().splitlines()[0])
 
 
-def baseline_gb() -> float | None:
-    """VRAM held by everything other than Ollama.
+def baseline_gb(settle_timeout: float = 20.0, poll: float = 1.0) -> float | None:
+    """VRAM held by everything other than Ollama, once it has settled.
 
     Call with no model loaded. Subtract this from the card's capacity to see
     what Ollama has to work with. Measured on 2026-08-29 it ranged 1.13-1.75
     GiB depending on what was open, which is enough variation to change
     which layers get offloaded -- so record it alongside every measurement.
+
+    The wait matters. `/api/ps` stops listing a model before the driver has
+    finished releasing its VRAM, so reading nvidia-smi the instant after an
+    unload captures the previous model's memory. Two Day 4 runs recorded
+    baselines of 7.19 and 5.91 GiB for that reason, against a true value
+    near 1.1. This polls until the reading stops falling.
     """
     used = gpu_used_mib()
-    return None if used is None else used / 1024
+    if used is None:
+        return None
+
+    deadline = time.time() + settle_timeout
+    while time.time() < deadline:
+        time.sleep(poll)
+        again = gpu_used_mib()
+        if again is None:
+            break
+        if again >= used - 32:  # within 32 MiB: it has stopped dropping
+            used = min(used, again)
+            break
+        used = again
+
+    return used / 1024
