@@ -1,10 +1,10 @@
 {
-  "label": "baseline-q8",
-  "model": "qwen2.5:7b-instruct-q8_0",
+  "label": "q4-ctx4096",
+  "model": "qwen2.5:7b",
   "num_ctx": 4096,
   "total": 100,
-  "correct": 81,
-  "accuracy": 0.81,
+  "correct": 80,
+  "accuracy": 0.8,
   "by_category": {
     "arithmetic": {
       "correct": 17,
@@ -17,9 +17,9 @@
       "accuracy": 0.9
     },
     "code": {
-      "correct": 13,
+      "correct": 12,
       "total": 20,
-      "accuracy": 0.65
+      "accuracy": 0.6
     },
     "factual": {
       "correct": 18,
@@ -39,6 +39,7 @@
     "cn-10",
     "cn-17",
     "code-09",
+    "code-20",
     "code-21",
     "code-42",
     "code-49",
@@ -51,7 +52,7 @@
     "reason-05",
     "reason-09",
     "reason-13",
-    "reason-16"
+    "reason-14"
   ],
   "wrong_replies": {
     "arith-11": "B",
@@ -60,6 +61,7 @@
     "cn-10": "B",
     "cn-17": "处",
     "code-09": "B",
+    "code-20": "A",
     "code-21": "B",
     "code-42": "A",
     "code-49": "A",
@@ -68,10 +70,10 @@
     "code-86": "B",
     "fact-05": "300000",
     "fact-16": "36.5",
-    "reason-04": "C",
+    "reason-04": "D",
     "reason-05": "B",
     "reason-09": "3",
     "reason-13": "B",
-    "reason-16": "D"
+    "reason-14": "B"
   }
 }

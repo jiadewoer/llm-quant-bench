@@ -1,0 +1,31 @@
+{
+  "label": "probe",
+  "model": "qwen2.5:7b-instruct-q8_0",
+  "num_ctx": 4096,
+  "total": 20,
+  "correct": 14,
+  "accuracy": 0.7,
+  "by_category": {
+    "arithmetic": {
+      "correct": 14,
+      "total": 20,
+      "accuracy": 0.7
+    }
+  },
+  "wrong_ids": [
+    "arith-02",
+    "arith-09",
+    "arith-11",
+    "arith-14",
+    "arith-15",
+    "arith-16"
+  ],
+  "wrong_replies": {
+    "arith-02": "50dollars",
+    "arith-09": "150公里",
+    "arith-11": "B",
+    "arith-14": "50",
+    "arith-15": "B",
+    "arith-16": "4天"
+  }
+}

@@ -1,7 +1,7 @@
 {
-  "label": "qwen2.5-7b-ctx2048",
-  "model": "qwen2.5:7b",
-  "num_ctx": 2048,
+  "label": "probe2",
+  "model": "qwen2.5:7b-instruct-q8_0",
+  "num_ctx": 4096,
   "total": 20,
   "correct": 17,
   "accuracy": 0.85,
