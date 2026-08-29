@@ -78,20 +78,51 @@ def test_context_and_parallel_are_interchangeable():
     assert c.total_gb == pytest.approx(d.total_gb, rel=1e-9)
 
 
-def test_disabling_flash_attention_doubles_context_cost_on_7b():
-    """A coincidence worth knowing about.
+def test_extra_context_term_is_empirical_and_unexplained():
+    """Guards a claim the code makes about itself, not about physics.
 
-    KV cache costs 2*L*H_kv*d_head*b = 56 KiB per token on Qwen2.5-7B.
-    The materialized attention buffer costs n_batch*H*4 = 56 KiB per token.
-    They happen to be equal, so OLLAMA_FLASH_ATTENTION=0 exactly doubles
-    what a context window costs.
+    Measured context cost on Qwen2.5-7B is 132 KiB per token; the KV cache
+    accounts for 56 KiB. The extra term supplies the rest and happens to
+    equal the KV cache exactly on this model.
+
+    That coincidence originally suggested a mechanism: llama.cpp's
+    materialized attention-score buffer, which exists only when flash
+    attention is off. The hypothesis was tested on 2026-08-29 by setting
+    OLLAMA_FLASH_ATTENTION=1 and re-measuring ctx 16384. SIZE did not move
+    -- 6.5 GB and a 12%/88% split under both settings. Falsified.
+
+    The term stays because it fits, and the docstring says so plainly. If
+    someone later renames it back to something that implies a mechanism,
+    this test is the reminder that no mechanism has been established.
     """
     e = estimate(PRESETS["qwen2.5-7b"], num_ctx=16384)
-    assert e.attn_buffer_gb == pytest.approx(e.kv_cache_gb, rel=0.01)
+    assert e.extra_context_gb == pytest.approx(e.kv_cache_gb, rel=0.01)
+    assert "unknown" in estimate.__doc__.lower()
 
-    on = estimate(PRESETS["qwen2.5-7b"], num_ctx=16384, flash_attention=True)
-    assert on.attn_buffer_gb == 0.0
-    assert on.context_cost_gb == pytest.approx(e.context_cost_gb / 2, rel=0.01)
+
+def test_flash_attention_setting_did_not_change_measured_size():
+    """The falsifying measurement itself, as a regression check.
+
+    ctx 16384 reported 6.5 GB with OLLAMA_FLASH_ATTENTION=0 and 6.5 GB with
+    it set to 1. One prediction has to cover both, because the estimator has
+    no flash-attention input any more -- removing that parameter was the
+    consequence of this result.
+    """
+    e = estimate(PRESETS["qwen2.5-7b"], num_ctx=16384)
+    assert e.total_gb == pytest.approx(6.5, abs=0.6)
+
+
+def test_kv_cache_only_reproduces_the_original_underprediction():
+    """The textbook formula, kept available for comparison.
+
+    Version 1 of the estimator had only weights plus KV cache. It predicted
+    6.43 GB for ctx 32768 against a measured 8.7 GB, a 2.3 GB miss, which is
+    why the extra term exists at all.
+    """
+    naive = estimate(PRESETS["qwen2.5-7b"], num_ctx=32768, kv_cache_only=True)
+    assert naive.extra_context_gb == 0.0
+    assert naive.total_gb == pytest.approx(6.43, abs=0.1)
+    assert naive.total_gb < 8.7 - 2.0  # under-predicts the measurement badly
 
 
 @pytest.mark.parametrize(

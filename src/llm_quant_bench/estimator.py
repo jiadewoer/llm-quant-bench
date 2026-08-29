@@ -85,17 +85,17 @@ class ModelSpec:
 class VRAMEstimate:
     weights_gb: float
     kv_cache_gb: float
-    attn_buffer_gb: float
+    extra_context_gb: float
     overhead_gb: float = 0.0
 
     @property
     def total_gb(self) -> float:
-        return self.weights_gb + self.kv_cache_gb + self.attn_buffer_gb + self.overhead_gb
+        return self.weights_gb + self.kv_cache_gb + self.extra_context_gb + self.overhead_gb
 
     @property
     def context_cost_gb(self) -> float:
         """Everything that scales with num_ctx x num_parallel."""
-        return self.kv_cache_gb + self.attn_buffer_gb
+        return self.kv_cache_gb + self.extra_context_gb
 
     def fits_in(self, budget_gb: float = MEASURED_GPU_BUDGET_GB) -> bool:
         """Will Ollama keep this fully resident on the GPU?
@@ -120,7 +120,7 @@ class VRAMEstimate:
     def __str__(self) -> str:
         return (
             f"weights={self.weights_gb:.2f} kv={self.kv_cache_gb:.2f} "
-            f"attn={self.attn_buffer_gb:.2f} total={self.total_gb:.2f} GB"
+            f"extra={self.extra_context_gb:.2f} total={self.total_gb:.2f} GB"
         )
 
 
@@ -130,8 +130,8 @@ def estimate(
     num_ctx: int = 2048,
     num_parallel: int = 1,
     kv_bytes_per_elem: float = 2.0,
-    flash_attention: bool = False,
     n_batch: int = 512,
+    kv_cache_only: bool = False,
     overhead_gb: float = 0.0,
 ) -> VRAMEstimate:
     """Estimate what `ollama ps` will report as SIZE.
@@ -146,20 +146,40 @@ def estimate(
        same multiplier. Measured confirmation: ctx 8192 with 4 slots and ctx
        32768 with 1 slot both reported exactly 8.7 GB.
 
-    3. Attention buffer: n_batch * effective_tokens * H * 4 bytes, and only
-       when flash attention is off. Without it llama.cpp materializes the
-       attention scores, and that buffer scales with total context just like
-       the cache does. For Qwen2.5-7B the two terms are coincidentally equal
-       at 56 KiB per token each, so switching flash attention off doubles
-       the cost of context.
+    3. Extra per-token cost, empirical: n_batch * effective_tokens * H * 4.
+
+       MECHANISM UNKNOWN. Measured context cost on Qwen2.5-7B is 132 KiB per
+       token; the KV cache accounts for only 56 KiB. This term supplies the
+       remaining 76 KiB and fits 11 measured configurations to within 0.24
+       GiB, but the reason it fits has not been established.
+
+       The original hypothesis was that it is llama.cpp's materialized
+       attention-score buffer, present only when flash attention is off.
+       That was tested on 2026-08-29 by setting OLLAMA_FLASH_ATTENTION=1
+       and re-measuring ctx 16384. SIZE did not move: 6.5 GB and a 12%/88%
+       split both times, identical to the flash-attention-off run.
+       Hypothesis falsified.
+
+       Most likely reason the test showed nothing: Ollama 0.24 appears to
+       ignore OLLAMA_FLASH_ATTENTION, so both runs used the same code path.
+       If flash attention was on throughout, the buffer this term was named
+       after never existed in any of the measurements.
+
+       The formula is kept because it predicts well across models with
+       different H / H_kv ratios -- notably 14B-q4, where a plain multiple
+       of the KV cache errs by 0.85 GiB and this form errs by 0.14 GiB. That
+       is weak evidence the extra cost really does scale with attention-head
+       count rather than KV-head count. It is not an explanation.
+
+       Candidate mechanisms, and the experiment that would separate them,
+       are listed in results/day3_offload.md section 6.
 
        This term uses effective_tokens, not num_ctx. It has to: ctx 8192
        with 4 slots and ctx 32768 with 1 slot were measured to report the
        same SIZE, so every context-dependent term must see the product.
 
-       Version 1 of this file omitted term 3 entirely and under-predicted
-       ctx 32768 by 1.5 GiB. Adding it brought the error under 0.2 GiB on
-       7B-q8 and 14B-q4.
+       Pass kv_cache_only=True to drop it and see the pure textbook
+       prediction, which under-predicts ctx 32768 by 1.5 GiB.
 
     Note that overhead defaults to 0: the CUDA context and driver allocation
     show up in the nvidia-smi baseline, not in Ollama's reported SIZE.
@@ -177,16 +197,16 @@ def estimate(
         * kv_bytes_per_elem
     ) / GIB
 
-    attn = (
+    extra = (
         0.0
-        if flash_attention
+        if kv_cache_only
         else (n_batch * effective_tokens * model.num_attention_heads * 4) / GIB
     )
 
     return VRAMEstimate(
         weights_gb=weights,
         kv_cache_gb=kv,
-        attn_buffer_gb=attn,
+        extra_context_gb=extra,
         overhead_gb=overhead_gb,
     )
 

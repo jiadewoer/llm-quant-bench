@@ -1,0 +1,15 @@
+{"id": "arith-01", "category": "arithmetic", "kind": "short", "question": "What is 47 * 23?", "answer": "1081"}
+{"id": "arith-02", "category": "arithmetic", "kind": "short", "question": "A shirt costs 40 dollars after a 20% discount. What was the original price in dollars?", "answer": "50"}
+{"id": "arith-03", "category": "arithmetic", "kind": "mcq", "question": "If a train travels 240 km in 3 hours, what is its average speed?", "choices": {"A": "60 km/h", "B": "70 km/h", "C": "80 km/h", "D": "90 km/h"}, "answer": "C"}
+{"id": "fact-01", "category": "factual", "kind": "mcq", "question": "Which element has the chemical symbol W?", "choices": {"A": "Tungsten", "B": "Tin", "C": "Uranium", "D": "Vanadium"}, "answer": "A"}
+{"id": "fact-02", "category": "factual", "kind": "short", "question": "What is the capital city of Australia?", "answer": "Canberra"}
+{"id": "fact-03", "category": "factual", "kind": "mcq", "question": "In which layer of the atmosphere does most weather occur?", "choices": {"A": "Stratosphere", "B": "Troposphere", "C": "Mesosphere", "D": "Thermosphere"}, "answer": "B"}
+{"id": "reason-01", "category": "reasoning", "kind": "mcq", "question": "All bloops are razzies. All razzies are lazzies. Which statement must be true?", "choices": {"A": "All lazzies are bloops", "B": "All bloops are lazzies", "C": "Some razzies are not lazzies", "D": "No bloops are lazzies"}, "answer": "B"}
+{"id": "reason-02", "category": "reasoning", "kind": "short", "question": "Tom is older than Jane. Jane is older than Sam. Who is youngest? Answer with a name.", "answer": "Sam"}
+{"id": "reason-03", "category": "reasoning", "kind": "mcq", "question": "A bat and a ball cost 1.10 dollars in total. The bat costs 1.00 dollar more than the ball. How much does the ball cost?", "choices": {"A": "0.10", "B": "0.05", "C": "0.15", "D": "0.01"}, "answer": "B"}
+{"id": "code-01", "category": "code", "kind": "mcq", "question": "In Python, what does len(set([1, 2, 2, 3, 3, 3])) return?", "choices": {"A": "6", "B": "3", "C": "2", "D": "1"}, "answer": "B"}
+{"id": "code-02", "category": "code", "kind": "short", "question": "In Python, what does the expression 7 // 2 evaluate to?", "answer": "3"}
+{"id": "code-03", "category": "code", "kind": "mcq", "question": "Which time complexity describes binary search on a sorted array of n elements?", "choices": {"A": "O(1)", "B": "O(log n)", "C": "O(n)", "D": "O(n log n)"}, "answer": "B"}
+{"id": "cn-01", "category": "chinese", "kind": "mcq", "question": "成语「刻舟求剑」讽刺的是哪一种行为？", "choices": {"A": "不知变通", "B": "贪得无厌", "C": "临阵脱逃", "D": "见异思迁"}, "answer": "A"}
+{"id": "cn-02", "category": "chinese", "kind": "short", "question": "《静夜思》的作者是谁？只回答姓名。", "answer": "李白"}
+{"id": "cn-03", "category": "chinese", "kind": "mcq", "question": "下列哪个词的意思与「一蹴而就」最接近？", "choices": {"A": "一挥而就", "B": "半途而废", "C": "循序渐进", "D": "精雕细琢"}, "answer": "A"}

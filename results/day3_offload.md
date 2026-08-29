@@ -63,13 +63,40 @@ which Ollama picks automatically between 1 and 4 when unset, silently
 multiplies VRAM consumption by up to 4× — enough to move a configuration
 from fully resident to half-offloaded without any visible cause.
 
-### One suspect data point
+### The "impossible" data point is not a display artifact
 
-ctx 32768 × P=4 reports 21 GB at 45% GPU, which implies 9.45 GiB resident on
-an 7.99 GiB card. That is impossible, so either the percentage is computed
-from layer count rather than bytes at this extreme, or the display rounds
-badly. Re-measure via `/api/ps`, which returns exact `size` and `size_vram`
-in bytes. Excluded from the error statistics below.
+ctx 32768 × P=4 reports 21 GB at 45% GPU, implying ~9.5 GiB resident on a
+7.996 GiB card. Re-read through `/api/ps` for exact bytes:
+
+```
+size      = 21,565,124,608 B = 20.084 GiB
+size_vram =  9,678,372,864 B =  9.014 GiB
+ratio     = 44.9%   (matches the displayed 45%)
+```
+
+**Rounding is ruled out. Ollama reports 9.01 GiB resident in VRAM, 1.02 GiB
+beyond the card's physical capacity and 2.36 GiB beyond what was free after
+the 1.34 GiB desktop baseline.**
+
+#### Explanation: Windows system memory fallback
+
+NVIDIA's Windows driver enables memory fallback by default (since 536.xx;
+this machine runs 580.88). When VRAM runs out the driver does not return
+OOM — it maps host RAM into the GPU's address space and serves it over PCIe.
+
+From CUDA's point of view the allocation succeeded, so Ollama honestly
+reports 9.01 GiB. Roughly 2.4 GiB of that lives in DDR5 and is reached at
+two orders of magnitude less bandwidth than real VRAM.
+
+**This is a completely silent performance cliff.** A user seeing `45% GPU`
+would assume half the compute is on the card. Half of that half is host
+memory wearing a costume, and nothing warns them.
+
+#### To be confirmed
+
+Day 4 throughput on this configuration should fall well below what a 45%
+split implies. If it is more than 2× slower than `7b-q4-ctx16384` at 88%
+GPU, the explanation holds.
 
 ---
 
@@ -105,17 +132,20 @@ gives **132 KiB per token**. The KV cache alone accounts for only 56 KiB:
 KV per token = 2 × L × H_kv × d_head × b = 2 × 28 × 4 × 128 × 2 = 56 KiB
 ```
 
-The missing 76 KiB is the materialized attention buffer. With
-`OLLAMA_FLASH_ATTENTION=0`, llama.cpp cannot fuse the attention computation
-and must allocate space for the scores:
+The missing 76 KiB was attributed to the materialized attention buffer. With
+`OLLAMA_FLASH_ATTENTION=0`, llama.cpp should be unable to fuse the attention
+computation and would have to allocate space for the scores:
 
 ```
 attn buffer per token = n_batch × H × 4 = 512 × 28 × 4 = 56 KiB
 ```
 
-For Qwen2.5-7B these two terms are coincidentally equal, so **turning flash
-attention off doubles what a context window costs**. Adding this term
-dropped the mean absolute SIZE error from 1.5 GB to 0.24 GB.
+For Qwen2.5-7B these two terms are coincidentally equal, which made the
+explanation look convincing. Adding the term dropped the mean absolute SIZE
+error from 1.5 GB to 0.24 GB.
+
+> ⚠️ **This explanation was later falsified by experiment. See §6.** The
+> formula still fits; the mechanism it names is wrong.
 
 ### Error 2 — a guessed VRAM budget
 
@@ -131,26 +161,76 @@ Across 11 configurations (excluding the suspect row in §3):
 
 ---
 
-## 6. The experiment this suggests
+## 6. The hypothesis was falsified
 
-The attention-buffer hypothesis is falsifiable and cheap to test. Set
-`OLLAMA_FLASH_ATTENTION=1`, restart the service, and re-measure ctx 16384.
+§5 attributed the extra 76 KiB per token to an attention-score buffer that
+exists only when flash attention is off. That claim is falsifiable, and it
+was tested.
 
-| Prediction | ctx 16384 | ctx 32768 |
+### Design
+
+One variable changed. `OLLAMA_FLASH_ATTENTION` set from 0 to 1, service and
+terminal restarted, `check_env.py` confirming `1 (expected 0)` before
+measuring. Everything else held constant: P=1, KV f16, same model, same
+`payloads/ctx16384.json`.
+
+### Result
+
+| | SIZE | PROCESSOR |
 |---|---|---|
-| FA off (measured) | 6.5 GB | 8.7 GB |
-| FA on (predicted) | 5.56 GB | 6.43 GB |
+| FA = 0 (original) | 6.5 GB | 12%/88% CPU/GPU |
+| FA = 1 (predicted 5.56 GB) | **6.5 GB** | **12%/88% CPU/GPU** |
 
-If SIZE drops by roughly the KV cache amount, the hypothesis holds and flash
-attention becomes a legitimate fourth axis: it buys back about 0.9 GiB at
-16K and 2.3 GiB at 32K, for free.
+**Nothing moved, down to the split. The hypothesis does not hold.**
 
-If SIZE does not drop, the excess is something else and the model needs
-another look.
+### Why the experiment showed nothing
 
-> Note that `OLLAMA_FLASH_ATTENTION=0` was set deliberately, to keep
-> `kv_bytes_per_elem = 2.0` honest. That decision turned out to have a cost
-> nobody documents.
+Most likely **Ollama 0.24 ignores `OLLAMA_FLASH_ATTENTION` entirely**. Recent
+versions enable flash attention by default and the variable is vestigial. A
+switch that produces bit-identical results in both positions is behaving
+exactly like a switch that is not wired to anything.
+
+If that is what happened, every measurement in this document was taken with
+flash attention on, and the buffer the term was named after never existed in
+any of them.
+
+### So what is the 76 KiB per token?
+
+**Not known.** This is an honest gap, not an omission.
+
+Constraints established so far:
+
+- It scales linearly with `num_ctx × num_parallel` (§3 guarantees this).
+- It appears to track attention-head count \(H\) rather than KV-head count
+  \(H_{kv}\). Evidence: 14B has a different \(H/H_{kv}\) ratio than 7B,
+  and fitting it as a fixed multiple of the KV cache errs by 0.85 GiB while
+  the \(n_{batch} \times H \times 4\) form errs by 0.14 GiB. One data
+  point, so weak evidence.
+
+Candidate mechanisms and the experiment that would separate them:
+
+| Candidate | How to test |
+|---|---|
+| Ollama's memory estimator carries a fixed margin | Compare `/api/ps` `size` against actual `nvidia-smi` usage |
+| A buffer tied to `n_batch` | Set `num_batch` to 128 and 1024; see whether the slope tracks it |
+| KV cache is not stored at f16 after all | Set `OLLAMA_KV_CACHE_TYPE=q8_0`; see whether the slope halves |
+| Architecture-dependent fixed overhead | Repeat the context sweep on llama3.1:8b, where \(H/H_{kv}=4\) |
+
+**The `n_batch` test is the cheapest and most discriminating**: `n_batch`
+appears only in this term and nowhere in the KV cache formula. Halve the
+batch; if the slope halves, the term really is batch-related. If the slope
+does not move, the whole form should be replaced.
+
+### What the estimator does about it
+
+The term is kept but renamed `extra_context_gb`, with the docstring stating
+plainly that the mechanism is unknown. It is a well-fitting empirical term
+(0.24 GiB mean error across 11 configurations), not an explained physical
+one. Presenting it as physics in the README would be dishonest.
+
+> This section records a failed hypothesis. Keeping it is worth more than
+> deleting it: a hypothesis that its own author could falsify is one that was
+> stated precisely enough to be worth making.
 
 ---
 
@@ -172,6 +252,17 @@ another look.
 - Desktop VRAM baseline varied by 0.6 GiB across readings depending on what
   was open. All Day 6 runs must be done in one session with the browser
   closed, and `baseline_gb` recorded per run.
+- **SIZE is reproducible; the GPU split is not.** ctx 16384 was measured
+  twice:
+
+  | | SIZE | PROCESSOR | baseline |
+  |---|---|---|---|
+  | first | 6.5 GB | 15%/85% | ~1.2 GiB |
+  | second | 6.5 GB | 12%/88% | 1.65 GiB |
+
+  Identical SIZE, so it depends only on configuration. The layer split is
+  decided at load time against whatever VRAM happens to be free. **A
+  gpu_ratio reported without its baseline is meaningless.**
 - `ollama ps` rounds SIZE to two significant figures. Day 6 should read
   `/api/ps` for exact byte counts.
 - Ollama's default context is 4096, not 2048. Any comparison against a
