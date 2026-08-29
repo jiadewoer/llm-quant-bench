@@ -1,0 +1,36 @@
+{
+  "label": "qwen2.5-7b-ctx2048-p1",
+  "model": "qwen2.5:7b",
+  "num_ctx": 2048,
+  "num_parallel": 1,
+  "n_requests": 2,
+  "baseline_gb": 1.154,
+  "ttft_p50_s": 0.313,
+  "ttft_p95_s": 0.338,
+  "decode_tps_mean": 51.83,
+  "decode_tps_min": 51.59,
+  "eval_tokens_mean": 94.0,
+  "measured": {
+    "size_gb": 4.477,
+    "vram_gb": 4.477,
+    "gpu_ratio": 1.0
+  },
+  "raw_requests": [
+    {
+      "ttft_s": 0.3412330000000168,
+      "wall_s": 2.245224800000017,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8219961,
+      "load_duration_s": 0.3088015
+    },
+    {
+      "ttft_s": 0.284520399999991,
+      "wall_s": 2.1738380999999833,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8051412,
+      "load_duration_s": 0.2411319
+    }
+  ]
+}
