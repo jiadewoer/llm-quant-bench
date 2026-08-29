@@ -51,7 +51,7 @@ would need ~12 GiB of cache alone.
 
 ```cmd
 git clone https://github.com/jiadewoer/llm-quant-bench.git
-cd /d llm-quant-bench
+cd llm-quant-bench
 uv venv
 .venv\Scripts\activate.bat
 uv pip install -e ".[dev]"
