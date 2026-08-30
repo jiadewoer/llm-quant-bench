@@ -13,7 +13,8 @@ from rich.table import Table
 from . import monitor
 from .bench import run_bench
 from .estimator import MEASURED_GPU_BUDGET_GB, PRESETS, Precision, estimate
-from .evaluate import review as review_eval, run_eval
+from .evaluate import review as review_eval
+from .evaluate import run_eval
 
 app = typer.Typer(add_completion=False, help="VRAM and throughput benchmarks for Ollama.")
 console = Console()
@@ -81,7 +82,9 @@ def ps() -> None:
 def bench(
     model: str = typer.Option(..., "--model", "-m", help="ollama tag, e.g. qwen2.5:7b"),
     ctx: int = typer.Option(2048, "--ctx"),
-    parallel: int = typer.Option(1, "--parallel", help="Records OLLAMA_NUM_PARALLEL; set it in the env too"),
+    parallel: int = typer.Option(
+        1, "--parallel", help="Recorded only; set OLLAMA_NUM_PARALLEL in the environment"
+    ),
     n: int = typer.Option(8, "--requests", "-n"),
     label: str = typer.Option("", "--label"),
 ) -> None:

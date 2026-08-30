@@ -26,6 +26,9 @@ lqb = "llm_quant_bench.cli:app"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_quant_bench"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
@@ -33,8 +36,12 @@ target-version = "py310"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# Typer builds its entire API on function calls in argument defaults, so B008
+# flags the framework rather than any mistake. The rule exists to catch mutable
+# defaults such as `def f(x=[])`; typer.Option and typer.Argument return
+# immutable option descriptors, so the hazard it guards against does not apply.
+"src/llm_quant_bench/cli.py" = ["B008"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/llm_quant_bench"]

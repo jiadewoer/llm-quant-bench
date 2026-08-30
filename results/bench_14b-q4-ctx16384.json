@@ -1,0 +1,84 @@
+{
+  "label": "14b-q4-ctx16384",
+  "model": "qwen2.5:14b",
+  "num_ctx": 16384,
+  "num_parallel": 1,
+  "n_requests": 8,
+  "baseline_gb": 1.119,
+  "ttft_p50_s": 0.502,
+  "ttft_p95_s": 0.535,
+  "decode_tps_mean": 5.07,
+  "decode_tps_min": 4.62,
+  "eval_tokens_mean": 128.0,
+  "measured": {
+    "size_gb": 12.571,
+    "vram_gb": 5.743,
+    "gpu_ratio": 0.4568
+  },
+  "raw_requests": [
+    {
+      "ttft_s": 0.4017611000017496,
+      "wall_s": 22.33469850000074,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 21.8342402,
+      "load_duration_s": 0.2581484
+    },
+    {
+      "ttft_s": 0.42875069999900006,
+      "wall_s": 24.61185789999945,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 24.0906678,
+      "load_duration_s": 0.2385057
+    },
+    {
+      "ttft_s": 0.513007399998969,
+      "wall_s": 26.444439999999304,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 25.840854,
+      "load_duration_s": 0.2624065
+    },
+    {
+      "ttft_s": 0.49172489999909885,
+      "wall_s": 26.50236589999986,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 25.9170064,
+      "load_duration_s": 0.2386985
+    },
+    {
+      "ttft_s": 0.4737834000006842,
+      "wall_s": 26.815369300000384,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 26.2530291,
+      "load_duration_s": 0.2651742
+    },
+    {
+      "ttft_s": 0.5187461000004987,
+      "wall_s": 26.21741479999946,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 25.6152527,
+      "load_duration_s": 0.2503539
+    },
+    {
+      "ttft_s": 0.5389556999998604,
+      "wall_s": 26.380814099999043,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 25.7500571,
+      "load_duration_s": 0.2458089
+    },
+    {
+      "ttft_s": 0.5263991000010719,
+      "wall_s": 28.304889600000024,
+      "prompt_tokens": 56,
+      "eval_tokens": 128,
+      "eval_duration_s": 27.6912056,
+      "load_duration_s": 0.2577597
+    }
+  ]
+}

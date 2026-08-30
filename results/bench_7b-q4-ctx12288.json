@@ -1,0 +1,84 @@
+{
+  "label": "7b-q4-ctx12288",
+  "model": "qwen2.5:7b",
+  "num_ctx": 12288,
+  "num_parallel": 1,
+  "n_requests": 8,
+  "baseline_gb": 1.116,
+  "ttft_p50_s": 0.272,
+  "ttft_p95_s": 0.291,
+  "decode_tps_mean": 51.84,
+  "decode_tps_min": 51.7,
+  "eval_tokens_mean": 94.0,
+  "measured": {
+    "size_gb": 5.42,
+    "vram_gb": 5.42,
+    "gpu_ratio": 1.0
+  },
+  "raw_requests": [
+    {
+      "ttft_s": 0.297130200000538,
+      "wall_s": 2.2108677000014723,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8140421,
+      "load_duration_s": 0.2676816
+    },
+    {
+      "ttft_s": 0.2714340999991691,
+      "wall_s": 2.1777562999996007,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8182212,
+      "load_duration_s": 0.2433664
+    },
+    {
+      "ttft_s": 0.2755061999996542,
+      "wall_s": 2.18214529999932,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8118247,
+      "load_duration_s": 0.2468609
+    },
+    {
+      "ttft_s": 0.27327969999896595,
+      "wall_s": 2.174216299999898,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8136466,
+      "load_duration_s": 0.2444585
+    },
+    {
+      "ttft_s": 0.2801987000002555,
+      "wall_s": 2.18374440000116,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8144278,
+      "load_duration_s": 0.2490527
+    },
+    {
+      "ttft_s": 0.2714402000001428,
+      "wall_s": 2.1749041000002762,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8137428,
+      "load_duration_s": 0.2418283
+    },
+    {
+      "ttft_s": 0.2679683999995177,
+      "wall_s": 2.17287639999995,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8117831,
+      "load_duration_s": 0.2385571
+    },
+    {
+      "ttft_s": 0.2631822999992437,
+      "wall_s": 2.1679996999992,
+      "prompt_tokens": 56,
+      "eval_tokens": 94,
+      "eval_duration_s": 1.8080194,
+      "load_duration_s": 0.235857
+    }
+  ]
+}
